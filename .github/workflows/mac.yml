@@ -13,7 +13,7 @@ on:
         default: 'macos-latest'
         type: choice
         options:
-          - macos-latest
+          - macos-26
           - macos-26-intel
           - windows-11-arm
           - ubuntu-24.04-arm
