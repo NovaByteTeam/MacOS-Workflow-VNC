@@ -1,10 +1,48 @@
-- name: Launch app and capture screenshot
-  run: |
-    open /path/to/YourApp.app
-    sleep 10
-    screencapture -x /tmp/screen.png
+name: macOS ARM64 Check
 
-- uses: actions/upload-artifact@v4
-  with:
-    name: app-screenshot
-    path: /tmp/screen.png
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: 'Optional direct download link to .7z app archive'
+        required: false
+        default: ''
+
+jobs:
+  test-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Check runner info
+        run: |
+          uname -m
+          sw_vers
+
+      - name: Download, sign, and screenshot app (optional)
+        if: ${{ inputs.app_url != '' }}
+        env:
+          APP_URL: ${{ inputs.app_url }}
+        run: |
+          brew install sevenzip
+          mkdir -p ~/Desktop/test-app
+          curl -fL "$APP_URL" -o /tmp/app.7z
+          7zz x /tmp/app.7z -snld20 -o"$HOME/Desktop/test-app" -y
+          xattr -cr ~/Desktop/test-app || true
+
+          for app in ~/Desktop/test-app/*.app; do
+            [ -e "$app" ] || continue
+            chmod -R +x "$app/Contents/MacOS"
+            codesign --verify --deep "$app" 2>/dev/null || codesign --force --deep --sign - "$app"
+            open "$app"
+          done
+
+          sleep 10
+          screencapture -x /tmp/screen.png
+
+      - name: Upload screenshot
+        if: ${{ always() && inputs.app_url != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64-screenshot
+          path: /tmp/screen.png
+          if-no-files-found: ignore
