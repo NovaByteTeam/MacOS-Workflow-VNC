@@ -10,10 +10,10 @@ on:
       runner:
         description: 'Runner'
         required: false
-        default: 'macos-15'
+        default: 'blacksmith-6vcpu-macos-latest'
         type: choice
         options:
-          - macos-15
+          - blacksmith-6vcpu-macos-latest
           - macos-26-intel
           - windows-11-arm
           - ubuntu-24.04-arm
