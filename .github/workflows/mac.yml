@@ -10,10 +10,10 @@ on:
       runner:
         description: 'Runner'
         required: false
-        default: 'macos-latest'
+        default: 'macos-15'
         type: choice
         options:
-          - macos-latest
+          - macos-15
           - macos-26-intel
           - windows-11-arm
           - ubuntu-24.04-arm
