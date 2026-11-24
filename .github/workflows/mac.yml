@@ -10,7 +10,7 @@ on:
       runner:
         description: 'Runner'
         required: false
-        default: 'macos-latest'
+        default: 'macos-26'
         type: choice
         options:
           - macos-26
